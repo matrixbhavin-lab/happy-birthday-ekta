@@ -67,65 +67,41 @@ button:hover{background:#fff;color:#66708f}
   <div class="heart" style="left:87%;animation-duration:11s;animation-delay:3s">❤️</div>
 
   <div class="card" id="gameScreen">
-    <div class="cake">😏</div>
-
-    <h1>Ekta, One Important Question...</h1>
-
-    <p class="subtitle">
+    <div class="cake" id="questionEmoji">😏</div>
+    <h1 id="questionTitle">Ekta, One Important Question...</h1>
+    <p class="subtitle" id="questionSubtitle">
       Before you get your birthday surprise,<br>
-      you have to answer honestly. 👀💕
+      you have to pass a tiny love test. 👀💕
     </p>
-
     <div class="love">💗 💕 💗</div>
-
-    <p class="message" style="font-size:28px;font-weight:bold;">
+    <p class="message" id="questionText" style="font-size:27px;font-weight:bold;">
       Do you love me? ❤️
     </p>
-
-    <div style="display:flex;justify-content:center;gap:18px;align-items:center;margin-top:28px;position:relative;min-height:60px;">
-      <button id="yesBtn" onclick="yesClicked()" style="margin:0;background:#e91e63;color:white;border:0;min-width:120px;">
-        YES ❤️
-      </button>
-
-      <button id="noBtn" onclick="noClicked()" style="margin:0;background:white;color:#66708f;border:0;min-width:120px;position:relative;">
-        NO 😜
-      </button>
+    <div id="answers" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;align-items:center;margin-top:28px;position:relative;min-height:65px;"></div>
+    <p id="hint" style="margin-top:22px;font-size:15px;opacity:.8;">Choose wisely... 😈</p>
+    <div style="margin-top:18px;font-size:13px;opacity:.65;">
+      Question <span id="questionNumber">1</span> of 6
     </div>
-
-    <p id="hint" style="margin-top:22px;font-size:15px;opacity:.8;">
-      Choose wisely... 😈
-    </p>
   </div>
 
   <div class="card" id="nextScreen" style="display:none;">
     <div class="cake">🥰</div>
-
-    <h1>Hmm... I Knew It! ❤️</h1>
-
+    <h1>You Passed! ❤️</h1>
     <p class="message">
-      I knew you couldn't say no to me. 😌💕
-      <br><br>
-      Since you answered correctly...
-      <br>
-      your birthday surprise is unlocked! 🎁
+      Okay Ekta... I think you are officially ready for your final surprise. 😏💕
+      <br><br>But there is one last thing...
     </p>
-
-    <div class="love">🎉 💖 🎂 💖 🎉</div>
-
+    <div class="love">🔐 💖 🔐</div>
     <button onclick="showBirthday()" style="background:#e91e63;color:white;border:0;">
-      Open Your Birthday Surprise 🎁
+      Unlock My Final Surprise 🔓
     </button>
   </div>
 
   <div class="card" id="birthdayScreen" style="display:none;">
     <div class="cake">🎂</div>
-
     <h1>Happy Birthday Ekta! ❤️</h1>
-
     <p class="subtitle">To the most beautiful woman in my life... 💕</p>
-
     <div class="love">💖 🎉 💖</div>
-
     <p class="message">
       Ekta, you are not just my wife — you are my happiness,
       my best friend, my comfort, and the most beautiful part
@@ -138,101 +114,103 @@ button:hover{background:#fff;color:#66708f}
       and warmth that you bring into my life every single day.
       <br><br>
       <strong>Happy Birthday, my love. ❤️</strong>
-      <br>
-      I love you more than words can ever say. 💕
+      <br>I love you more than words can ever say. 💕
     </p>
-
     <div class="signature">Forever yours, ❤️</div>
 
-    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:25px;">
-      <button onclick="celebrate()" style="background:#e91e63;color:white;border:0;margin-top:0;">
-        Celebrate Again 🎉
-      </button>
-      <button onclick="restartGame()" style="background:transparent;color:#66708f;border:2px solid #66708f;margin-top:0;">
-        Start Again 💕
-      </button>
-    </div>
   </div>
 </div>
 
 <script>
-const noBtn=document.getElementById("noBtn");
-const hint=document.getElementById("hint");
+const questions=[
+{emoji:"😏",title:"Question 1",text:"Do you love me? ❤️",answers:[["YES ❤️",1],["NO 😜",0]],hint:"Choose wisely... 😈"},
+{emoji:"🥰",title:"Question 2",text:"Who is the luckier one in this relationship? 👀",answers:[["ME 😌",1],["You 😂",1]],hint:"There is actually only one acceptable answer... 😂"},
+{emoji:"🍕",title:"Question 3",text:"If I steal the last piece of pizza, will you forgive me? 🍕",answers:[["Of course ❤️",1],["Absolutely NOT! 😤",1]],hint:"Careful... this one could decide our future. 😂"},
+{emoji:"💋",title:"Question 4",text:"Would you choose me again if you had to? 💕",answers:[["YES, ALWAYS ❤️",1],["Maybe... 🤔",0]],hint:"Think carefully, Ekta... 😏"},
+{emoji:"🏖️",title:"Question 5",text:"If we could disappear somewhere together right now, would you come with me? 🌴",answers:[["YES! 🥰",1],["NO 😜",0]],hint:"I already packed my bags. 😂❤️"},
+{emoji:"💖",title:"Final Question",text:"Are you ready for your birthday surprise? 🎁",answers:[["YESSS! 🎉",1],["NO 😜",0]],hint:"The surprise is waiting... 😏"}
+];
 
-let noAttempts=0;
+let currentQuestion=0;
 
-function noClicked(){
-  noAttempts++;
-
-  const maxX=Math.max(20,window.innerWidth-170);
-  const maxY=Math.max(80,window.innerHeight-120);
-
-  noBtn.style.position="fixed";
-  noBtn.style.left=(Math.random()*maxX)+"px";
-  noBtn.style.top=(Math.random()*maxY)+"px";
-  noBtn.classList.add("runaway");
-
-  const hints=[
-    "Nice try! 😂",
-    "Nope! You can't catch the NO! 😜",
-    "The NO button is shy today. 😂",
-    "Come on Ekta... you know the answer! ❤️",
-    "Stop chasing NO! Just press YES! 😏",
-    "Okay okay... I'll make it easier. YES is right there! 😂❤️"
-  ];
-
-  hint.textContent=hints[Math.min(noAttempts-1,hints.length-1)];
+function renderQuestion(){
+ const q=questions[currentQuestion];
+ document.getElementById("questionEmoji").textContent=q.emoji;
+ document.getElementById("questionTitle").textContent=q.title;
+ document.getElementById("questionText").textContent=q.text;
+ document.getElementById("hint").textContent=q.hint;
+ document.getElementById("questionNumber").textContent=currentQuestion+1;
+ const answers=document.getElementById("answers");
+ answers.innerHTML="";
+ q.answers.forEach((a,i)=>{
+   const b=document.createElement("button");
+   b.textContent=a[0];
+   b.style.margin="0"; b.style.minWidth="125px"; b.style.border="0";
+   b.style.background=i===0?"#e91e63":"white";
+   b.style.color=i===0?"white":"#66708f";
+   if(a[1]===0){ b.id="runawayButton"; b.onclick=runAway; }
+   else b.onclick=()=>answerQuestion();
+   answers.appendChild(b);
+ });
 }
 
-function yesClicked(){
-  noBtn.style.display="none";
-  document.getElementById("gameScreen").style.display="none";
-  document.getElementById("nextScreen").style.display="block";
-  celebrate();
+function runAway(){
+ const b=document.getElementById("runawayButton");
+ if(!b)return;
+ b.style.position="fixed";
+ const x=Math.max(20,Math.random()*(window.innerWidth-b.offsetWidth-40));
+ const y=Math.max(20,Math.random()*(window.innerHeight-b.offsetHeight-40));
+ b.style.left=x+"px"; b.style.top=y+"px";
+ const hints=["Nice try! 😂","Nope! You can't catch me! 😜","The NO button is running away! 🏃‍♀️😂","Wrong answer detected! 🚨❤️","Come on Ekta... you know better! 😏","Just choose the other one! 😂💕"];
+ document.getElementById("hint").textContent=hints[Math.min(currentQuestion,hints.length-1)];
+}
+
+function answerQuestion(){
+ currentQuestion++;
+ if(currentQuestion<questions.length){
+   renderQuestion();
+   window.scrollTo({top:0,behavior:"smooth"});
+ }else{
+   document.getElementById("gameScreen").style.display="none";
+   document.getElementById("nextScreen").style.display="block";
+   celebrate();
+   window.scrollTo({top:0,behavior:"smooth"});
+ }
 }
 
 function showBirthday(){
-  document.getElementById("nextScreen").style.display="none";
-  document.getElementById("birthdayScreen").style.display="block";
-  celebrate();
+ document.getElementById("nextScreen").style.display="none";
+ document.getElementById("birthdayScreen").style.display="block";
+ celebrate();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function restartGame(){
-  document.getElementById("birthdayScreen").style.display="none";
-  document.getElementById("nextScreen").style.display="none";
-  document.getElementById("gameScreen").style.display="block";
-
-  const noBtn=document.getElementById("noBtn");
-  noBtn.style.display="block";
-  noBtn.style.position="relative";
-  noBtn.style.left="";
-  noBtn.style.top="";
-
-  document.getElementById("hint").textContent="Choose wisely... 😈";
-  window.scrollTo({top:0,behavior:"smooth"});
+ currentQuestion=0;
+ document.getElementById("birthdayScreen").style.display="none";
+ document.getElementById("nextScreen").style.display="none";
+ document.getElementById("gameScreen").style.display="block";
+ renderQuestion();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function celebrate(){
-  for(let i=0;i<140;i++){
-    const c=document.createElement("div");
-    c.className="confetti";
-    c.style.left=Math.random()*100+"vw";
-    c.style.background=[
-      "#ff1744","#ffea00","#00e676",
-      "#00b0ff","#d500f9","#ffffff"
-    ][Math.floor(Math.random()*6)];
-    c.style.width=(Math.random()*8+5)+"px";
-    c.style.height=(Math.random()*8+5)+"px";
-    c.style.animationDuration=(Math.random()*3+2)+"s";
-    c.style.animationDelay=Math.random()*1.5+"s";
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),6500);
-  }
+ for(let i=0;i<140;i++){
+   const c=document.createElement("div");
+   c.className="confetti";
+   c.style.left=Math.random()*100+"vw";
+   c.style.background=["#ff1744","#ffea00","#00e676","#00b0ff","#d500f9","#ffffff"][Math.floor(Math.random()*6)];
+   c.style.width=(Math.random()*8+5)+"px";
+   c.style.height=(Math.random()*8+5)+"px";
+   c.style.animationDuration=(Math.random()*3+2)+"s";
+   c.style.animationDelay=Math.random()*1.5+"s";
+   document.body.appendChild(c);
+   setTimeout(()=>c.remove(),6500);
+ }
 }
 
-window.addEventListener("load",()=>{
-  setTimeout(celebrate,700);
-});
+renderQuestion();
+window.addEventListener("load",()=>setTimeout(celebrate,700));
 </script>
 
 </body>
